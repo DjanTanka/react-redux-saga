@@ -1,23 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+import { useDispatch } from "react-redux";
+import "./App.css";
 
 function App() {
+  // const store = useSelector(store => store)
+  const dispatch = useDispatch();
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {/* в данном месте диспатч исп-ся не для редьюсера,  а для запуска саги */}
+      <button onClick={() => dispatch({ type: "CLICK_LOAD_startSaga" })}>
+        {" "}
+        Click{" "}
+      </button>
+      <button onClick={() => dispatch({ type: "CLICK_CLEAN_startSaga" })}>
+        {" "}
+        Clean Store{" "}
+      </button>
     </div>
   );
 }
