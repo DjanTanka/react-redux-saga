@@ -1,45 +1,18 @@
-import { call, fork, put, spawn, takeEvery } from 'redux-saga/effects'
-
-//бизнес логика приложений(запросы и др. ассинхронные действия)
-
-
-export function* workerSaga() {
-
-  const getInfoSwapi = async (type) => {
-    console.log('---type', type)
-    let response = await fetch(`http://swapi.dev/api/${type}`)
-    const data = await response.json()
-    return data
-  }
-
-  function* loadPeople () {
-    // throw new Error(); 
-    const dataPeople = yield call(getInfoSwapi, 'people');
-    yield put({type: "LOAD_PEOPLE" , payload: dataPeople.results});
-  } 
-
-  function* loadPlanet () {
-    const dataPlanets = yield call(getInfoSwapi, 'planets');
-    yield put({type: "LOAD_PLANETS" , payload: dataPlanets.results})
-  } 
-
-  yield spawn(loadPeople)
-  yield fork(loadPlanet)
-}
-
-export function* workerCleanSaga () {
-  yield put({type: "CLEAN_STORE" });
-}
-
-// в вотчере описываем какие экшены будут происходить в приложении 
-//и за ктр следим
-export function* watchClickSaga() {
-  yield takeEvery('CLICK_LOAD_startSaga', workerSaga )
-  yield takeEvery('CLICK_CLEAN_startSaga', workerCleanSaga);
-}  
+import { all } from 'redux-saga/effects'
+import { getPeopleWatcher } from './people/getPeopleSaga'
+import { removePeopleWatcher } from './people/removePeopleSaga'
+import { getPlanetsWatcher } from './planets/getPlanetsSaga'
+import { removePlanetsWatcher } from './planets/removePlanetsSaga'
+import { removeWholeStateWatcher } from './state'
 
 export default function* rootSaga() {
-  yield watchClickSaga();
+  yield all([
+    getPeopleWatcher(),
+    removePeopleWatcher(),
+    getPlanetsWatcher(),
+    removePlanetsWatcher(),
+    removeWholeStateWatcher()
+  ])
   //yield fork(watchClickSaga); так как fork не блокирует
   //и поведение приложения не изменится
 }
@@ -52,12 +25,15 @@ export default function* rootSaga() {
   
   //put вызывает dispatch c переданным action и payload
 
+  //yield fork(loadPeople)
+  // yield fork(loadPlanet)
+
   //fork для параллельных асинхронных запросов. т.е. не блокирует и одновременно будут
-  //загружаться и loadPeople и loadPlanet. а не ждать, когда загрузиться один чтоб загрузит 2
+  //загружаться и loadPeople и loadPlanet. а не ждать, когда загрузится один чтоб загрузить 2
   // в отличиe от call.Но у форк есть проблемы. если в одном из дочерних fork
   //возникнет ошибка, то заблокируется вся родительская сага и все другие дочерние эффекты
   //чтоб такого не происходило надо использовать spawn. В таком случае блокируется только одна эта
-  //дочрняя сага, остольные дочерние  и родительская - будут работать
+  //дочeрняя сага, остальные дочерние  и родительская - будут работать
 
   //join
  
