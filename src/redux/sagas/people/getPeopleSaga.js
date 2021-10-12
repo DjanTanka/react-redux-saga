@@ -1,4 +1,4 @@
-import { call, put, takeEvery } from '@redux-saga/core/effects';
+import { call, put, takeLatest} from '@redux-saga/core/effects';
 import getInfoSwapi from '../../../utils/getInfoSwapi'
 
 //бизнес логика приложений(запросы и др. ассинхронные действия)
@@ -19,5 +19,5 @@ export function* getPeopleWorker() {
 // в вотчере описываем какие экшены будут происходить в приложении 
 //и за ктр следим
 export function* getPeopleWatcher() {
-  yield takeEvery('GET_PEOPLE_startSaga', getPeopleWorker)
+  yield takeLatest('GET_PEOPLE_startSaga', getPeopleWorker)
 }  

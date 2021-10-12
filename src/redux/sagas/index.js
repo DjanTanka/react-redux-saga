@@ -3,16 +3,30 @@ import { getPeopleWatcher } from './people/getPeopleSaga'
 import { removePeopleWatcher } from './people/removePeopleSaga'
 import { getPlanetsWatcher } from './planets/getPlanetsSaga'
 import { removePlanetsWatcher } from './planets/removePlanetsSaga'
-import { removeWholeStateWatcher } from './state'
+import { removeWholeStateWatcher } from '../sagas/stateApp/state'
+import { autoWatcher, autoWorker } from './automaticSaga/autoSaga'
+
 
 export default function* rootSaga() {
-  yield all([
+//Чтобы автоматически стартовали нужные саги при первой загрузке просто записываем так: 
+  yield autoWatcher()
+
+  yield all([    //all запускает переданные эффекты || . 
     getPeopleWatcher(),
     removePeopleWatcher(),
     getPlanetsWatcher(),
     removePlanetsWatcher(),
     removeWholeStateWatcher()
   ])
+
+  // yield [
+  //   getPeopleWatcher(),    можно и так, но если хоть одна сага
+  //   removePeopleWatcher(),  зафейлится, то последующие перестанут выполнятся, как и вся рутсага
+  //   getPlanetsWatcher(),     также !!! они будут выполнятся одна за другойб по очереди,
+  //   removePlanetsWatcher(),    поэтому надо обкрнуть в fork чтоб если необходимо, они выполнялись параллельно
+  //   removeWholeStateWatcher()  с fork также зафейлится.... может обернуть в spawn??? ......да, spawn и надо использовать!!!
+  // ]
+
   //yield fork(watchClickSaga); так как fork не блокирует
   //и поведение приложения не изменится
 }
