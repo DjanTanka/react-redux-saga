@@ -8,14 +8,13 @@ import NewComponent from "./components/NewComponent";
 
 function App() {
   let history = useHistory();
+  const dispatch = useDispatch();
   const handleGoToNewComponent = () => {
     history.push('/newComponent');
-
   }
 
   const statusPeople = useSelector(state => state.peopleReducer.statusPeople)
   const statusPlanets = useSelector(state => state.planetsReducer.statusPlanets)
-  const dispatch = useDispatch();
 
   return (
     <div className="App">
