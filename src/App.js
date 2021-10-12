@@ -1,10 +1,18 @@
 import { useDispatch, useSelector } from "react-redux";
+import  { Switch, Route, useHistory } from 'react-router-dom'
 import "./App.css";
 import CircularProgress from '@material-ui/core/CircularProgress'
 import People from "./components/People";
 import Planets from "./components/Planets";
+import NewComponent from "./components/NewComponent";
 
 function App() {
+  let history = useHistory();
+  const handleGoToNewComponent = () => {
+    history.push('/newComponent');
+
+  }
+
   const statusPeople = useSelector(state => state.peopleReducer.statusPeople)
   const statusPlanets = useSelector(state => state.planetsReducer.statusPlanets)
   const dispatch = useDispatch();
@@ -31,6 +39,14 @@ function App() {
       {statusPeople === 'SUCCESS'  && <People/>}
       {statusPlanets === 'SEARHING'  && <CircularProgress/>}
       {statusPlanets === 'SUCCESS'  && <Planets/>}
+      <div>
+        <button onClick={handleGoToNewComponent}>
+          go to new component
+        </button>
+      </div>
+      <Switch>
+       <Route path="/newComponent" component={NewComponent}></Route>
+     </Switch>
     </div>
   );
 }
